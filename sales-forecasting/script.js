@@ -135,37 +135,56 @@ function updateForecast(itemName){
   const labels = data.map(d=>d.date || d.month);
   const actual = data.map(d=>d.value || d.sales);
 
-  const naiveForecast = Array(actual.length).fill(actual[actual.length-2]);
-  const movingAvgForecast = movingAverage(actual,3);
-  const regressionForecast = linearRegression(actual);
-  const quantileForecast = quantileFilteredForecast(actual);
+  // --- 75/25 train-test split ---
+  const splitIndex = Math.floor(actual.length * 0.75);
+  const train = actual.slice(0, splitIndex);
+  const test = actual.slice(splitIndex);
 
-  const mapeNaive = calculateMAPE(actual, naiveForecast);
-  const mapeMA = calculateMAPE(actual, movingAvgForecast);
-  const mapeLR = calculateMAPE(actual, regressionForecast);
-  const mapeQF = calculateMAPE(actual, quantileForecast);
+  // --- Forecasting on training data ---
+  const naiveTest = Array(test.length).fill(train[train.length-2]);
+  const movingAvgTest = Array(test.length).fill(movingAverage(train,3)[train.length-1]);
+  const regressionTest = linearRegression(train).slice(-1)[0]; // last train prediction
+  const quantileTest = quantileFilteredForecast(train).slice(-1)[0]; // last train prediction
+
+  // --- Forecast arrays: null for train, forecast for test ---
+  const naiveForecast = Array(splitIndex).fill(null).concat(naiveTest);
+  const movingAvgForecast = Array(splitIndex).fill(null).concat(movingAvgTest);
+  const regressionForecast = Array(splitIndex).fill(null).concat(
+    linearRegression(actual).slice(splitIndex)
+  );
+  const quantileForecast = Array(splitIndex).fill(null).concat(
+    quantileFilteredForecast(actual).slice(splitIndex)
+  );
+
+  // --- Evaluate only on test set ---
+  const mapeNaive = calculateMAPE(test, naiveForecast.slice(splitIndex));
+  const mapeMA = calculateMAPE(test, movingAvgForecast.slice(splitIndex));
+  const mapeLR = calculateMAPE(test, regressionForecast.slice(splitIndex));
+  const mapeQF = calculateMAPE(test, quantileForecast.slice(splitIndex));
 
   const mapeScores = { "Naive": mapeNaive, "Moving Average": mapeMA, "Linear Regression": mapeLR, "Quantile Regression": mapeQF };
   const bestModel = Object.keys(mapeScores).reduce((a,b)=>mapeScores[a]<mapeScores[b]?a:b);
 
   document.getElementById('mapeOutput').innerHTML = `
     ✅ Best Model: ${bestModel}<br><br>
-    📊 MAPE Scores:<br>
+    📊 MAPE Scores (on test set):<br>
     Naive Forecast: ${mapeNaive.toFixed(2)}%<br>
     Moving Average: ${mapeMA.toFixed(2)}%<br>
     Linear Regression: ${mapeLR.toFixed(2)}%<br>
     Quantile-Filtered Regression: ${mapeQF.toFixed(2)}%
   `;
 
+  // --- Update chart (show only test period forecasts) ---
   chart.data.labels = labels;
   chart.data.datasets[0].data = actual;
   chart.data.datasets[1].data = naiveForecast;
   chart.data.datasets[2].data = movingAvgForecast;
   chart.data.datasets[3].data = regressionForecast;
   chart.data.datasets[4].data = quantileForecast;
-  chart.options.plugins.title.text = `Forecast Model Comparison - ${itemName}`;
+  chart.options.plugins.title.text = `Forecast Model Comparison - ${itemName} (75% Train / 25% Test)`;
   chart.update();
 }
+
 
 // Dropdown event listener
 document.getElementById('productSelect').addEventListener('change', e=>updateForecast(e.target.value));
