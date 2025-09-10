@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Car Buy Estimator</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    h1 { margin-bottom: 20px; }
+    .input-group { margin-bottom: 15px; }
+    label { display: block; font-weight: bold; margin-bottom: 5px; }
+    input[type="text"], input[type="number"] { padding: 5px; width: 150px; }
+
+    .flex-item {
+      flex: 1;
+      padding: 15px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background: #f9f9f9;
+      max-width: 900px;
+    }
+
+    .header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .header-row h2 {
+      margin: 0;
+    }
+
+    .input-row { display: flex; gap: 10px; margin-bottom: 10px; }
+    .input-row .input-group { margin-bottom: 0; }
+    button { padding: 10px 20px; cursor: pointer; font-size: 16px; }
+    #results { margin-top: 20px; font-family: monospace; white-space: pre-wrap; }
+    canvas { margin-top: 30px; }
+
+    /* Tabs styling */
+    .tabs {
+      display: flex;
+      flex-direction: row;
+      gap: 10px;
+    }
+    .tab {
+      padding: 10px 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background: #f1f1f1;
+      cursor: pointer;
+      font-weight: bold;
+      text-align: center;
+    }
+    .tab.active {
+      background: #ddd;
+    }
+  </style>
+</head>
+<body>
+  <h1>Car Buy Estimator</h1>
+
+  <!-- API Key -->
+  <div class="input-group">
+    <label for="apiKey">Enter API Key:</label>
+    <input type="text" id="apiKey" placeholder="Enter your MarketCheck API Key" style="width:325px;">
+  </div>
+
+  <!-- Buy Details + Tabs inside same container -->
+  <div class="flex-item">
+    <div class="header-row">
+      <h2>Buy Details</h2>
+      <div class="tabs">
+        <button class="tab active">Vehicle 1</button>
+        <button class="tab">Vehicle 2</button>
+        <button class="tab">Vehicle 3</button>
+        <button class="tab">Compare All</button>
+      </div>
+    </div>
+
+    <div class="input-row">
+      <div class="input-group">
+        <label for="vin">VIN:</label>
+        <input type="text" id="vin" placeholder="Enter Vehicle VIN" style="width:325px;">
+      </div>
+      <div class="input-group">
+        <label for="zip">Zip Code:</label>
+        <input type="text" id="zip" placeholder="Enter Zip Code" style="width:120px;">
+      </div>
+      <div class="input-group">
+        <label for="avgTravel">Average Travel:</label>
+        <input type="text" id="zip" placeholder="By Year" style="width:120px;">
+      </div>
+    </div>
+
+    <div class="input-row">
+      <div class="input-group">
+        <label for="buyTerm">Term:</label>
+        <input type="number" id="buyTerm" placeholder="Year" style="width:60px;">
+      </div>
+      <div class="input-group">
+        <label for="downPayment">Down Payment ($):</label>
+        <input type="number" id="downPayment" value="0" style="width:180px;">
+      </div>
+      <div class="input-group">
+        <label for="buyMonthly">Monthly Payment ($):</label>
+        <input type="number" id="buyMonthly" value="0" style="width:180px;">
+      </div>
+      <div class="input-group">
+        <label for="currentMiles">Current Miles:</label>
+        <input type="number" id="buyMonthly" value="0" style="width:125px;">
+      </div>
+    </div>
+  </div>
+
+  <!-- Calculate Button -->
+  <button id="calculateBtn" style="margin-top:20px;">Calculate Car Value</button>
+
+  <!-- Chart -->
+  <canvas id="carChart" width="800" height="200"></canvas>
+
+  <!-- Results -->
+  <div id="results"></div> 
+
+  <!-- JS -->
+  <script src="script.js"></script>
+</body>
+</html>
