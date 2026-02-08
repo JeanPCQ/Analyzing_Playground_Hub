@@ -2,128 +2,477 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Car Buy Estimator</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  
   <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
-    h1 { margin-bottom: 20px; }
-    .input-group { margin-bottom: 15px; }
-    label { display: block; font-weight: bold; margin-bottom: 5px; }
-    input[type="text"], input[type="number"] { padding: 5px; width: 150px; }
-
-    .flex-item {
-      flex: 1;
-      padding: 15px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      background: #f9f9f9;
-      max-width: 900px;
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
 
-    .header-row {
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #e8eef5 100%);
+      color: #1a202c;
+      line-height: 1.6;
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      margin-bottom: 50px;
+      animation: fadeInDown 0.6s ease-out;
+    }
+
+    .header h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: 42px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: #0f172a;
+      letter-spacing: -1px;
+    }
+
+    .header p {
+      font-size: 16px;
+      color: #64748b;
+      font-weight: 500;
+    }
+
+    /* Container */
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    /* API Key Section */
+    .api-section {
+      background: white;
+      padding: 24px;
+      border-radius: 12px;
+      margin-bottom: 30px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      animation: fadeInUp 0.6s ease-out 0.1s both;
+    }
+
+    .api-row {
+      display: flex;
+      gap: 16px;
+      align-items: flex-end;
+      flex-wrap: wrap;
+    }
+
+    .api-input-group {
+      flex: 1;
+      min-width: 300px;
+    }
+
+    .api-input-group label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #334155;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .api-input-group input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      background: #f8fafc;
+    }
+
+    .api-input-group input:focus {
+      outline: none;
+      border-color: #3b82f6;
+      background: white;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .api-link {
+      padding: 12px 20px;
+      background: #f0f4f8;
+      color: #3b82f6;
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+    }
+
+    .api-link:hover {
+      background: #3b82f6;
+      color: white;
+    }
+
+    /* Vehicle Tabs */
+    .tabs-section {
+      background: white;
+      padding: 24px;
+      border-radius: 12px;
+      margin-bottom: 30px;
+      animation: fadeInUp 0.6s ease-out 0.2s both;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .tabs-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 20px;
+      margin-bottom: 24px;
+      border-bottom: 2px solid #f1f5f9;
+      padding-bottom: 16px;
     }
 
-    .header-row h2 {
-      margin: 0;
+    .tabs-header h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 24px;
+      font-weight: 600;
+      color: #0f172a;
     }
 
-    .input-row { display: flex; gap: 10px; margin-bottom: 10px; }
-    .input-row .input-group { margin-bottom: 0; }
-    button { padding: 10px 20px; cursor: pointer; font-size: 16px; }
-    #results { margin-top: 20px; font-family: monospace; white-space: pre-wrap; }
-    canvas { margin-top: 30px; }
-
-    /* Tabs styling */
     .tabs {
       display: flex;
-      flex-direction: row;
-      gap: 10px;
+      gap: 8px;
+      flex-wrap: wrap;
     }
+
     .tab {
-      padding: 10px 20px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      background: #f1f1f1;
+      padding: 10px 18px;
+      border: none;
+      border-radius: 8px;
+      background: #f1f5f9;
+      color: #64748b;
       cursor: pointer;
-      font-weight: bold;
-      text-align: center;
+      font-weight: 600;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
     }
+
+    .tab:hover {
+      background: #e2e8f0;
+    }
+
     .tab.active {
-      background: #ddd;
+      background: #3b82f6;
+      color: white;
+      border-color: #3b82f6;
+    }
+
+    /* Form Sections */
+    .form-section {
+      margin-bottom: 24px;
+    }
+
+    .form-section h3 {
+      font-size: 12px;
+      font-weight: 700;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 16px;
+    }
+
+    .input-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .input-group label {
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #334155;
+      font-size: 14px;
+    }
+
+    .input-group input {
+      padding: 12px 14px;
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      background: #f8fafc;
+      transition: all 0.3s ease;
+    }
+
+    .input-group input:focus {
+      outline: none;
+      border-color: #3b82f6;
+      background: white;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    /* Buttons */
+    .button-row {
+      display: flex;
+      gap: 12px;
+      margin-top: 30px;
+    }
+
+    .btn {
+      padding: 14px 28px;
+      border: none;
+      border-radius: 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      color: white;
+      flex: 1;
+      box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-secondary {
+      background: #f1f5f9;
+      color: #334155;
+    }
+
+    .btn-secondary:hover {
+      background: #e2e8f0;
+    }
+
+    /* Results Section */
+    .results-section {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      margin-top: 30px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      animation: fadeInUp 0.6s ease-out 0.3s both;
+    }
+
+    .results-section h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: #0f172a;
+    }
+
+    #results {
+      font-family: 'Inter', monospace;
+      font-size: 14px;
+      color: #334155;
+      line-height: 1.8;
+      white-space: pre-wrap;
+      background: #f8fafc;
+      padding: 16px;
+      border-radius: 8px;
+      border-left: 4px solid #3b82f6;
+    }
+
+    /* Chart */
+    .chart-container {
+      position: relative;
+      margin-top: 30px;
+      background: white;
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      animation: fadeInUp 0.6s ease-out 0.4s both;
+    }
+
+    .chart-container h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: #0f172a;
+    }
+
+    #carChart {
+      max-width: 100%;
+    }
+
+    /* Animations */
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 32px;
+      }
+
+      .tabs-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+      }
+
+      .api-row {
+        flex-direction: column;
+      }
+
+      .api-input-group {
+        min-width: 100%;
+      }
+
+      .button-row {
+        flex-direction: column;
+      }
+
+      .btn {
+        width: 100%;
+      }
+
+      .input-row {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
 <body>
-  <h1>Car Buy Estimator</h1>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <h1>Car Buy Estimator</h1>
+      <p>Get accurate vehicle valuation and financing insights</p>
+    </div>
 
-  <!-- API Key -->
-  <div class="input-group">
-    <label for="apiKey">Enter API Key:</label>
-    <input type="text" id="apiKey" placeholder="Enter your MarketCheck API Key" style="width:325px;">
-    <span><a href="https://www.marketcheck.com/" target="_blank">Link - Create Free Key</a></span>
+    <!-- API Key Section -->
+    <div class="api-section">
+      <div class="api-row">
+        <div class="api-input-group">
+          <label for="apiKey">MarketCheck API Key</label>
+          <input type="text" id="apiKey" placeholder="Enter your MarketCheck API Key">
+        </div>
+        <a href="https://www.marketcheck.com/" target="_blank" class="api-link">Get Free API Key →</a>
+      </div>
+    </div>
+
+    <!-- Vehicle Tabs & Details -->
+    <div class="tabs-section">
+      <div class="tabs-header">
+        <h2>Vehicle Details</h2>
+        <div class="tabs">
+          <button class="tab active">Vehicle 1</button>
+          <button class="tab">Vehicle 2</button>
+          <button class="tab">Vehicle 3</button>
+          <button class="tab">Compare All</button>
+        </div>
+      </div>
+
+      <!-- VIN & Location -->
+      <div class="form-section">
+        <h3>Vehicle Identification</h3>
+        <div class="input-row">
+          <div class="input-group">
+            <label for="vin">VIN Number</label>
+            <input type="text" id="vin" placeholder="e.g., JTEHT05K0A5031238">
+          </div>
+          <div class="input-group">
+            <label for="zip">Zip Code</label>
+            <input type="text" id="zip" placeholder="e.g., 10001">
+          </div>
+          <div class="input-group">
+            <label for="avgTravel">Annual Miles</label>
+            <input type="number" id="avgTravel" placeholder="e.g., 12000">
+          </div>
+        </div>
+      </div>
+
+      <!-- Financing Details -->
+      <div class="form-section">
+        <h3>Financing</h3>
+        <div class="input-row">
+          <div class="input-group">
+            <label for="buyTerm">Loan Term (Years)</label>
+            <input type="number" id="buyTerm" placeholder="e.g., 5" min="1" max="10">
+          </div>
+          <div class="input-group">
+            <label for="downPayment">Down Payment ($)</label>
+            <input type="number" id="downPayment" value="0" placeholder="e.g., 5000" min="0">
+          </div>
+          <div class="input-group">
+            <label for="buyMonthly">Monthly Payment ($)</label>
+            <input type="number" id="buyMonthly" value="0" placeholder="e.g., 350" min="0">
+          </div>
+          <div class="input-group">
+            <label for="currentMiles">Current Mileage</label>
+            <input type="number" id="currentMiles" value="0" placeholder="e.g., 45000" min="0">
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="button-row">
+        <button id="calculateBtn" class="btn btn-primary">Calculate Car Value</button>
+        <button class="btn btn-secondary">Clear Form</button>
+      </div>
+    </div>
+
+    <!-- Results Section -->
+    <div class="results-section" style="display: none;" id="resultsWrapper">
+      <h2>Valuation Results</h2>
+      <div id="results"></div>
+    </div>
+
+    <!-- Chart Section -->
+    <div class="chart-container" style="display: none;" id="chartWrapper">
+      <h2>Market Comparison</h2>
+      <canvas id="carChart"></canvas>
+    </div>
   </div>
 
-  <!-- Buy Details + Tabs inside same container -->
-  <div class="flex-item">
-    <div class="header-row">
-      <h2>Buy Details</h2>
-      <div class="tabs">
-        <button class="tab active">Vehicle 1</button>
-        <button class="tab">Vehicle 2</button>
-        <button class="tab">Vehicle 3</button>
-        <button class="tab">Compare All</button>
-      </div>
-    </div>
-
-    <div class="input-row">
-      <div class="input-group">
-        <label for="vin">VIN:</label>
-        <input type="text" id="vin" placeholder="Enter Vehicle VIN" style="width:325px;">
-      </div>
-      <div class="input-group">
-        <label for="zip">Zip Code:</label>
-        <input type="text" id="zip" placeholder="Enter Zip Code" style="width:120px;">
-      </div>
-      <div class="input-group">
-        <label for="avgTravel">Average Travel:</label>
-        <input type="text" id="zip" placeholder="By Year" style="width:120px;">
-      </div>
-    </div>
-
-    <div class="input-row">
-      <div class="input-group">
-        <label for="buyTerm">Term:</label>
-        <input type="number" id="buyTerm" placeholder="Year" style="width:60px;">
-      </div>
-      <div class="input-group">
-        <label for="downPayment">Down Payment ($):</label>
-        <input type="number" id="downPayment" value="0" style="width:180px;">
-      </div>
-      <div class="input-group">
-        <label for="buyMonthly">Monthly Payment ($):</label>
-        <input type="number" id="buyMonthly" value="0" style="width:180px;">
-      </div>
-      <div class="input-group">
-        <label for="currentMiles">Current Miles:</label>
-        <input type="number" id="buyMonthly" value="0" style="width:125px;">
-      </div>
-    </div>
-  </div>
-
-  <!-- Calculate Button -->
-  <button id="calculateBtn" style="margin-top:20px;">Calculate Car Value</button>
-
-  <!-- Chart -->
-  <canvas id="carChart" width="800" height="200"></canvas>
-
-  <!-- Results -->
-  <div id="results"></div> 
-
-  <!-- JS -->
   <script src="script.js"></script>
 </body>
 </html>
