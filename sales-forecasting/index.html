@@ -2,72 +2,107 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Sales Forecasting Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Compare sales forecasting models and evaluate their accuracy with your own CSV data.">
+  <title>Sales Forecasting | Project Playground</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="stylesheet" href="style.css">
-  <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
-    #mapeOutput { margin-bottom: 20px; font-size: 16px; }
-    #productSelect, #fileInput { margin: 10px 0; padding: 5px; }
-    #fileMessage { margin-left: 10px; color: red; font-weight: bold; }
-    section#summary { margin-top:40px; padding:20px; border-top:1px solid #ccc; background:#f9f9f9; }
-  </style>
 </head>
 <body>
-  <h1>Sales Forecasting Demo</h1>
+  <main class="page-shell">
+    <header class="page-header">
+      <a class="back-link" href="../index.html"><span aria-hidden="true">←</span> Project Playground</a>
+      <p class="eyebrow">Interactive data demo</p>
+      <h1>Sales forecasting</h1>
+      <p class="intro-copy">Explore different ways to forecast sales, compare model accuracy, and see how well each approach fits your data.</p>
+    </header>
 
-  <!-- File Upload -->
-<input type="file" id="fileInput" accept=".csv">
-<span id="fileMessage"></span>
-<p style="font-size:11px; margin-bottom:2px;"><em>Format Sample (Required - *)</em></p>
-<table style="font-size:13px; border-collapse:collapse; margin-bottom:8px; width:auto;">
-  <thead>
-    <tr>
-      <th style="border:1px solid #ccc; padding:2px 8px;">Date *</th>
-      <th style="border:1px solid #ccc; padding:2px 8px;">Item *</th>
-      <th style="border:1px solid #ccc; padding:2px 8px;">Value *</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td style="border:1px solid #ccc; padding:2px 8px;">1/1/2025</td>
-      <td style="border:1px solid #ccc; padding:2px 8px;">Sample_Product</td>
-      <td style="border:1px solid #ccc; padding:2px 8px;">100</td>
-    </tr>
-  </tbody>
-</table>
+    <section class="workspace" aria-labelledby="workspace-title">
+      <div class="section-heading">
+        <div>
+          <p class="section-kicker">Get started</p>
+          <h2 id="workspace-title">Choose your sales data</h2>
+        </div>
+        <span class="data-limit">CSV · up to 100 rows</span>
+      </div>
 
+      <div class="upload-layout">
+        <div class="upload-control">
+          <label class="file-label" for="fileInput">Upload a CSV file</label>
+          <p class="field-hint" id="fileHint">Include a header row with Date, Item, and Value columns.</p>
+          <input type="file" id="fileInput" accept=".csv" aria-describedby="fileHint fileMessage">
+          <p id="fileMessage" class="file-message" role="status" aria-live="polite"></p>
+        </div>
 
-  <!-- Product Dropdown -->
-  <div>
-    <label for="productSelect">Select Product/Item:</label>
-    <select id="productSelect"></select>
-  </div>
+        <div class="format-example">
+          <p class="example-title">Expected format <span>Required columns marked *</span></p>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Date *</th>
+                  <th scope="col">Item *</th>
+                  <th scope="col">Value *</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1/1/2025</td>
+                  <td>Sample_Product</td>
+                  <td>100</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
 
-  <!-- MAPE / Best model output (on top) -->
-  <div id="mapeOutput" class="mape"></div>
+      <div class="product-control">
+        <label for="productSelect">Product or item</label>
+        <select id="productSelect" aria-label="Select product or item"></select>
+        <span class="field-hint">Upload a CSV to choose which item to forecast.</span>
+      </div>
+    </section>
 
-  <!-- Chart placeholder -->
-  <canvas id="forecastChart"></canvas>
+    <section class="results" aria-labelledby="results-title">
+      <div class="section-heading">
+        <div>
+          <p class="section-kicker">Model comparison</p>
+          <h2 id="results-title">Forecast performance</h2>
+        </div>
+        <span class="evaluation-note">75% training · 25% test</span>
+      </div>
+      <div id="mapeOutput" class="mape" aria-live="polite"></div>
+      <div class="chart-card">
+        <canvas id="forecastChart" aria-label="Sales forecast model comparison chart" role="img"></canvas>
+      </div>
+    </section>
 
-  <!-- Summary Section -->
-  <section id="summary">
-    <h2>📄 Summary</h2>
-    <p>This demo illustrates basic sales forecasting using JavaScript directly in the browser.</p>
-    <ul>
-      <li><strong>Naive Forecast:</strong> Uses the last observed value for all future points.</li>
-      <li><strong>Moving Average Forecast:</strong> Computes the average of the previous 3 months to smooth short-term fluctuations.</li>
-      <li><strong>Linear Regression Forecast:</strong> Fits a straight line trend to the sales data to capture overall growth/decline.</li>
-      <li><strong>Quantile-Filtered Regression Forecast:</strong> Removes outliers using the interquartile range (IQR) before fitting a linear regression, making it more robust to anomalies.</li>
-    </ul>
-    <p>The code calculates the <strong>MAPE (Mean Absolute Percentage Error)</strong> for each method and automatically identifies the best-performing forecasting approach.</p>
-    <p>Users can upload their own CSV (max 100 rows) and select different items to dynamically view forecasts and MAPE scores.</p>
-  </section>
+    <details class="summary">
+      <summary>
+        <span>
+          <span class="section-kicker">About this demo</span>
+          <span class="summary-title">How the forecast works</span>
+        </span>
+        <span class="details-icon" aria-hidden="true">+</span>
+      </summary>
+      <div class="summary-content">
+        <p>This demo compares four forecasting approaches using sales data directly in your browser:</p>
+        <ul>
+          <li><strong>Naive forecast:</strong> Uses the last observed value for future points.</li>
+          <li><strong>Moving average:</strong> Averages the previous three months to smooth short-term fluctuations.</li>
+          <li><strong>Linear regression:</strong> Fits a straight-line trend to capture overall growth or decline.</li>
+          <li><strong>Quantile-filtered regression:</strong> Removes outliers using the interquartile range (IQR) before fitting a trend.</li>
+        </ul>
+        <p>Mean Absolute Percentage Error (MAPE) is calculated for each method on the test data, and the best-performing approach is highlighted. CSV uploads can contain up to 100 rows.</p>
+      </div>
+    </details>
 
-  <!-- Link back if used in multi-project site -->
-  <p><a href="../index.html">⬅ Back to Forecasting Playground</a></p>
-
-  <!-- JavaScript -->
+    <footer class="page-footer">
+      <a class="back-link" href="../index.html"><span aria-hidden="true">←</span> Back to all projects</a>
+      <span>Built for exploring data</span>
+    </footer>
+  </main>
   <script src="script.js"></script>
 </body>
 </html>
