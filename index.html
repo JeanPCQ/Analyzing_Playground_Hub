@@ -2,54 +2,113 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>📊 Analyzing Playground</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 50px;
-      text-align: center;
-    }
-    h1 {
-      font-size: 2em;
-      margin-bottom: 20px;
-    }
-    .project-link {
-      display: block;
-      margin: 15px;
-      padding: 15px;
-      background: #f4f4f4;
-      border-radius: 8px;
-      text-decoration: none;
-      color: #333;
-      font-size: 1.2em;
-      transition: background 0.2s;
-    }
-    .project-link:hover {
-      background: #ddd;
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Meet Jean Pierre and explore his interactive data and web projects.">
+  <title>Jean Pierre's Project Playground</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <main class="page-shell">
+    <header class="intro">
+      <p class="eyebrow"><span aria-hidden="true">✦</span> A little corner of the internet</p>
+      <h1>Hey, I’m Jean Pierre<span class="wave" aria-hidden="true"> 👋</span></h1>
+      <p class="intro-copy">
+        I enjoy exploring how data and simple web apps can solve real-world problems.
+        This is my project playground—pick something that looks fun and give it a try.
+      </p>
+    </header>
 
-  <h1>📊 Analyzing Playground</h1>
-  <p>Explore different analytical techniques to grow:</p>
+    <section class="projects" id="projects" aria-labelledby="projects-title">
+      <div class="technology-filter">
+        <p class="filter-label" id="filter-label">Filter by tech <span>(choose any)</span></p>
+        <div class="filter-buttons" role="group" aria-labelledby="filter-label">
+          <button class="filter-button" type="button" data-filter="sql" aria-pressed="false">SQL</button>
+          <button class="filter-button" type="button" data-filter="python" aria-pressed="false">Python</button>
+          <button class="filter-button" type="button" data-filter="java" aria-pressed="false">Java</button>
+          <button class="filter-button" type="button" data-filter="javascript" aria-pressed="false">JavaScript</button>
+        </div>
+        <p class="filter-hint">Click a tag to filter; click it again to clear.</p>
+      </div>
 
-  <a class="project-link" href="sales-forecasting/index.html">
-    📈 Sales Forecasting
-  </a>
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Made with curiosity</p>
+          <h2 id="projects-title">The project shelf</h2>
+        </div>
+        <p class="project-count" aria-live="polite">4 projects to explore</p>
+      </div>
 
-  <a class="project-link" href="Car-Dealership/index.html">
-    🚗 Car Dealership Portal
-  </a>
+      <div class="project-grid">
+        <a class="project-card card-lime" href="sales-forecasting/index.html" data-technologies="javascript">
+          <span class="card-icon" aria-hidden="true">📈</span>
+          <span class="card-status">Interactive demo</span>
+          <h3>Sales Forecasting</h3>
+          <p>Upload sales data, compare forecasting methods, and see which one best fits the trend.</p>
+          <span class="card-link">Try the demo <span aria-hidden="true">↗</span></span>
+        </a>
 
-  <a class="project-link" href="Car-Estimator/index.html">
-    🚘 Car Purchase View
-  </a>
+        <a class="project-card card-peach" href="Car-Estimator/index.html" data-technologies="javascript">
+          <span class="card-icon" aria-hidden="true">🚙</span>
+          <span class="card-status">Interactive demo</span>
+          <h3>Car Buy Estimator</h3>
+          <p>Explore vehicle valuations and market comparisons with a car-buying estimator.</p>
+          <span class="card-link">Take a look <span aria-hidden="true">↗</span></span>
+        </a>
 
-   <a class="project-link" href="Local-API/index.html">
-    🖇️ Local Test Data API
-  </a>
+        <a class="project-card card-lavender" href="Local-API/index.html" data-technologies="sql">
+          <span class="card-icon" aria-hidden="true">🧰</span>
+          <span class="card-status">Developer tool</span>
+          <h3>Local Test Data API</h3>
+          <p>A Docker-ready API and database setup for testing, prototyping, and learning.</p>
+          <span class="card-link">See how it works <span aria-hidden="true">↗</span></span>
+        </a>
 
+        <a class="project-card card-blue" href="Car-Dealership/index.html" data-technologies="javascript">
+          <span class="card-icon" aria-hidden="true">🚗</span>
+          <span class="card-status">In progress</span>
+          <h3>Car Dealership Portal</h3>
+          <p>A dealership portal project that’s still being built. Check back as it takes shape!</p>
+          <span class="card-link">Visit the project <span aria-hidden="true">↗</span></span>
+        </a>
+      </div>
+      <p class="no-projects" role="status" hidden>No projects match those tags yet. Try another tag!</p>
+    </section>
 
+    <footer class="footer">
+      <p>Thanks for stopping by <span aria-hidden="true">✌️</span> More experiments coming soon.</p>
+    </footer>
+  </main>
+  <script>
+    const filterButtons = document.querySelectorAll('.filter-button');
+    const projectCards = document.querySelectorAll('.project-card');
+    const projectCount = document.querySelector('.project-count');
+    const noProjectsMessage = document.querySelector('.no-projects');
+
+    function updateProjects() {
+      const activeFilters = [...filterButtons]
+        .filter(button => button.getAttribute('aria-pressed') === 'true')
+        .map(button => button.dataset.filter);
+      let visibleCount = 0;
+
+      projectCards.forEach(card => {
+        const technologies = card.dataset.technologies.split(' ');
+        const isVisible = activeFilters.length === 0
+          || activeFilters.some(filter => technologies.includes(filter));
+        card.hidden = !isVisible;
+        if (isVisible) visibleCount++;
+      });
+
+      projectCount.textContent = `${visibleCount} ${visibleCount === 1 ? 'project' : 'projects'} to explore`;
+      noProjectsMessage.hidden = visibleCount !== 0;
+    }
+
+    filterButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const isActive = button.getAttribute('aria-pressed') === 'true';
+        button.setAttribute('aria-pressed', String(!isActive));
+        updateProjects();
+      });
+    });
+  </script>
 </body>
 </html>
