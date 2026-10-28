@@ -1,9 +1,0 @@
-{
-  "order_id": "WEB-1002",
-  "placed_at": "2026-10-24T15:40:00Z",
-  "customer_code": "PEACH",
-  "items": [
-    { "sku": "BLT-1420", "qty": 100, "price": 0.25 },
-    { "sku": "NUT-1420", "qty": 100, "price": 0.10 }
-  ]
-}

@@ -1,7 +1,0 @@
-{
-  "java.configuration.updateBuildConfiguration": "automatic",
-  "java.compile.nullAnalysis.mode": "disabled",
-  "files.exclude": {
-    "**/target": true
-  }
-}

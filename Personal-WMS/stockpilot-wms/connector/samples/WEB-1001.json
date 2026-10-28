@@ -1,9 +1,0 @@
-{
-  "order_id": "WEB-1001",
-  "placed_at": "2026-10-24T14:05:00Z",
-  "customer_code": "WEB",
-  "items": [
-    { "sku": "ZIP-08",  "qty": 200, "price": 0.15 },
-    { "sku": "TAPE-48", "qty": 6,   "price": 3.49 }
-  ]
-}
