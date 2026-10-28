@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('New purchase order')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: nav}"></header>
+<main class="page">
+    <div th:replace="~{fragments/layout :: flash}"></div>
+    <div class="page-head"><h1>New purchase order</h1></div>
+    <section class="panel">
+        <form class="stack" th:action="@{/purchase-orders}" method="post">
+            <label>Vendor
+                <select name="vendorId" required>
+                    <option th:each="v : ${vendors}" th:value="${v.id}" th:text="${v.name + ' (' + v.code + ')'}">Vendor</option>
+                </select>
+            </label>
+            <label>Expected date
+                <input type="date" name="expectedDate">
+            </label>
+            <label>Notes
+                <input type="text" name="notes" maxlength="255">
+            </label>
+            <div class="actions">
+                <button type="submit" class="btn act">Create purchase order</button>
+                <a class="btn quiet" th:href="@{/purchase-orders}">Cancel</a>
+            </div>
+        </form>
+    </section>
+</main>
+</body>
+</html>

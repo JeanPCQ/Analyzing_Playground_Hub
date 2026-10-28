@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Inventory history')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: nav}"></header>
+<main class="page">
+    <div class="page-head">
+        <div>
+            <h1>Inventory history</h1>
+            <p class="sub">The latest 200 movements. Every change to stock is recorded here and never edited.</p>
+        </div>
+    </div>
+    <section class="panel">
+        <p class="empty" th:if="${#lists.isEmpty(transactions)}">No movements yet.</p>
+        <div class="table-wrap" th:unless="${#lists.isEmpty(transactions)}">
+            <table>
+                <thead><tr><th>When</th><th>User</th><th>Type</th><th>Part</th><th>Location</th><th>Reference</th><th>Note</th><th class="num">Qty</th></tr></thead>
+                <tbody>
+                <tr th:each="t : ${transactions}">
+                    <td class="muted" th:text="${@fmt.dateTime(t.createdAt)}">date</td>
+                    <td th:text="${t.username}">user</td>
+                    <td th:text="${@fmt.label(t.type)}">type</td>
+                    <td><a th:href="@{/parts/{id}(id=${t.part.id})}" th:text="${t.part.partNumber}">PN</a></td>
+                    <td th:text="${t.location.code}">LOC</td>
+                    <td th:text="${t.reference}">ref</td>
+                    <td class="muted" th:text="${t.note}">note</td>
+                    <td class="num" th:classappend="${@fmt.neg(t.qtyChange)} ? 'neg'" th:text="${@fmt.qty(t.qtyChange)}">0</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+</body>
+</html>

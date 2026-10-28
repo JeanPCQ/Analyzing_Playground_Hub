@@ -1,0 +1,8 @@
+{
+  "order_id": "WEB-1003",
+  "placed_at": "2026-10-24T16:12:00Z",
+  "customer_code": "WEB",
+  "items": [
+    { "sku": "GLV-XL", "qty": 2, "price": 9.99 }
+  ]
+}

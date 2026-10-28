@@ -1,0 +1,22 @@
+# Web store connector settings.
+spring:
+  application:
+    name: stockpilot-connector
+  main:
+    web-application-type: none   # a background worker, not a website
+
+connector:
+  wms-base-url: http://localhost:8080
+  username: connector
+  password: connector123
+  app-name: Web store connector
+  app-id: webstore-connector-01
+  # Folders are relative to the connector/ folder.
+  inbox-dir: inbox
+  processed-dir: processed
+  failed-dir: failed
+  poll-interval-ms: 15000
+
+logging:
+  file:
+    name: logs/connector.log

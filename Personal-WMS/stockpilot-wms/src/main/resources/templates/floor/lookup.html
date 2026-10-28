@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Look up')}"></head>
+<body class="floor">
+<header th:replace="~{fragments/layout :: floorbar}"></header>
+<main class="floor-page">
+    <h1>Look up an item</h1>
+    <form class="floor-form" th:action="@{/floor/lookup}" method="get">
+        <input type="text" name="partNumber" th:value="${partNumber}" placeholder="Scan or type a part number"
+               autocapitalize="characters" autofocus required>
+        <button class="btn act" type="submit">Look up</button>
+    </form>
+
+    <p class="card" th:if="${notFound}" th:text="'No part ' + ${partNumber} + '. Check the label and try again.'">Not found</p>
+
+    <div class="card" th:if="${summary}" style="margin-top:12px">
+        <h2 th:text="${summary.part.partNumber}">PN</h2>
+        <div class="muted" th:text="${summary.part.description}">desc</div>
+        <div class="big-qty" th:text="${@fmt.qty(summary.available)} + ' available'">0</div>
+        <div class="muted" th:text="${@fmt.qty(summary.onHand)} + ' on hand, ' + ${@fmt.qty(summary.allocated)} + ' allocated'">info</div>
+        <ul class="bins">
+            <li th:each="b : ${levels}">
+                <span th:text="${b.location.code}">LOC</span>
+                <strong th:classappend="${@fmt.neg(b.qtyOnHand)} ? 'neg'" th:text="${@fmt.qty(b.qtyOnHand)}">0</strong>
+            </li>
+        </ul>
+    </div>
+</main>
+</body>
+</html>

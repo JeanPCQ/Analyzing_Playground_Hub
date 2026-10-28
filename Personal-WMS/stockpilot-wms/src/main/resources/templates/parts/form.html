@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${editing} ? 'Edit part' : 'New part')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: nav}"></header>
+<main class="page">
+    <div class="page-head">
+        <h1 th:text="${editing} ? 'Edit ' + ${form.partNumber} : 'New part'">New part</h1>
+    </div>
+    <section class="panel">
+        <form class="stack" method="post" th:object="${form}"
+              th:action="${editing} ? @{/parts/{id}(id=${partId})} : @{/parts}">
+            <label>Part number
+                <input type="text" th:field="*{partNumber}" th:readonly="${editing}" maxlength="40" required>
+                <span class="field-error" th:if="${#fields.hasErrors('partNumber')}" th:errors="*{partNumber}"></span>
+            </label>
+            <label>Description
+                <input type="text" th:field="*{description}" maxlength="255" required>
+                <span class="field-error" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></span>
+            </label>
+            <label>Standard cost (per each)
+                <input type="number" step="0.0001" min="0" th:field="*{standardCost}" required>
+                <span class="field-error" th:if="${#fields.hasErrors('standardCost')}" th:errors="*{standardCost}"></span>
+            </label>
+            <label>Reorder point (eaches)
+                <input type="number" step="1" min="0" th:field="*{reorderPoint}" required>
+                <span class="field-error" th:if="${#fields.hasErrors('reorderPoint')}" th:errors="*{reorderPoint}"></span>
+            </label>
+            <label class="checkbox" th:if="${editing}">
+                <input type="checkbox" th:field="*{active}"> Active
+            </label>
+            <div class="actions">
+                <button type="submit" class="btn act" th:text="${editing} ? 'Save changes' : 'Create part'">Save</button>
+                <a class="btn quiet" th:href="${editing} ? @{/parts/{id}(id=${partId})} : @{/parts}">Cancel</a>
+            </div>
+        </form>
+    </section>
+</main>
+</body>
+</html>

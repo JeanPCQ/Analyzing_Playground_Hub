@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${so.soNumber})}"></head>
+<body>
+<header th:replace="~{fragments/layout :: nav}"></header>
+<main class="page">
+    <div th:replace="~{fragments/layout :: flash}"></div>
+    <div class="page-head">
+        <div>
+            <h1><span th:text="${so.soNumber}">SO</span>
+                <span class="pill" th:classappend="${@fmt.statusClass(so.status)}" th:text="${@fmt.label(so.status)}">Status</span></h1>
+            <p class="sub" th:text="${so.customer.name}">Customer</p>
+        </div>
+        <div class="actions">
+            <form th:if="${so.editable}" th:action="@{/sales-orders/{id}/issue(id=${so.id})}" method="post">
+                <button class="btn act" type="submit">Issue and allocate</button>
+            </form>
+            <form th:if="${!so.closed}"
+                  th:action="@{/sales-orders/{id}/cancel(id=${so.id})}" method="post"
+                  onsubmit="return confirm('Cancel this order?')">
+                <button class="btn danger" type="submit">Cancel order</button>
+            </form>
+        </div>
+    </div>
+
+    <section class="panel">
+        <dl class="facts">
+            <dt>Ordered</dt><dd th:text="${so.orderDate}">date</dd>
+            <dt>Source</dt><dd th:text="${@fmt.label(so.source)} + (${so.externalRef} ? ' (' + ${so.externalRef} + ')' : '')">Manual</dd>
+            <dt>Ship to</dt><dd th:text="${so.customer.shipTo} ?: 'Not set'">address</dd>
+            <dt>Order total</dt><dd><strong th:text="${@fmt.money(total)}">$0</strong></dd>
+            <th:block th:if="${so.shippedAt}">
+                <dt>Shipped</dt><dd th:text="${@fmt.dateTime(so.shippedAt)} + ' via ' + ${so.carrier} + (${so.trackingNumber} ? ', tracking ' + ${so.trackingNumber} : '')">date</dd>
+            </th:block>
+        </dl>
+    </section>
+
+    <section class="panel">
+        <h2>Lines</h2>
+        <p class="empty" th:if="${#lists.isEmpty(so.lines)}">No lines yet. Add what the customer ordered below.</p>
+        <div class="table-wrap" th:unless="${#lists.isEmpty(so.lines)}">
+            <table>
+                <thead><tr><th>#</th><th>Part</th><th class="num">Ordered</th><th class="num">Picked</th>
+                    <th class="num">Unit price</th><th class="num">Line total</th><th>Where it is</th><th></th></tr></thead>
+                <tbody>
+                <tr th:each="line : ${so.lines}" th:classappend="${line.fullyPicked} ? 'done'">
+                    <td th:text="${line.lineNo}">1</td>
+                    <td><strong th:text="${line.part.partNumber}">PN</strong>
+                        <div class="muted" th:text="${line.part.description}"></div></td>
+                    <td class="num" th:text="${@fmt.qty(line.qtyOrdered)}">0</td>
+                    <td class="num" th:text="${@fmt.qty(line.qtyPicked)}">0</td>
+                    <td class="num" th:text="${@fmt.money(line.unitPrice)}">$0</td>
+                    <td class="num" th:text="${@fmt.money(line.lineTotal)}">$0</td>
+                    <td class="muted">
+                        <span th:each="b, it : ${binsByLine[line.id]}"
+                              th:text="${b.location.code + ': ' + @fmt.qty(b.qtyOnHand) + (it.last ? '' : ', ')}">A-01-01: 5</span>
+                    </td>
+                    <td>
+                        <form th:if="${so.editable}" th:action="@{/sales-orders/{id}/lines/{lineId}/delete(id=${so.id},lineId=${line.id})}" method="post">
+                            <button class="btn danger small" type="submit">Remove</button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="panel" th:if="${so.editable}">
+        <h2>Add a line</h2>
+        <form class="inline" th:action="@{/sales-orders/{id}/lines(id=${so.id})}" method="post">
+            <label>Part
+                <select name="partId" required>
+                    <option th:each="p : ${parts}" th:value="${p.id}" th:text="${p.partNumber + ' - ' + p.description}">Part</option>
+                </select>
+            </label>
+            <label>Quantity (EA) <input type="number" name="qty" step="any" min="0" required></label>
+            <label>Unit price <input type="number" name="unitPrice" step="0.0001" min="0" required></label>
+            <button class="btn act" type="submit">Add line</button>
+        </form>
+    </section>
+
+    <section class="panel" th:if="${so.pickable}">
+        <h2>Pick</h2>
+        <form class="inline" th:action="@{/sales-orders/{id}/pick(id=${so.id})}" method="post">
+            <label>Line
+                <select name="lineId" required>
+                    <option th:each="line : ${so.lines}" th:unless="${line.fullyPicked}" th:value="${line.id}"
+                            th:text="${line.lineNo + ': ' + line.part.partNumber + ' (' + @fmt.qty(line.qtyRemaining) + ' left)'}">Line</option>
+                </select>
+            </label>
+            <label>From location
+                <select name="locationId" required>
+                    <option th:each="l : ${locations}" th:value="${l.id}" th:text="${l.code}">LOC</option>
+                </select>
+            </label>
+            <label>Quantity <input type="number" name="qty" step="any" min="0" required></label>
+            <button class="btn act" type="submit">Pick</button>
+        </form>
+    </section>
+
+    <section class="panel" th:if="${so.picked}">
+        <h2>Ship</h2>
+        <form class="inline" th:action="@{/sales-orders/{id}/ship(id=${so.id})}" method="post">
+            <label>Carrier
+                <select name="carrier" required>
+                    <option>UPS</option><option>FedEx</option><option>USPS</option><option>LTL freight</option><option>Customer pickup</option>
+                </select>
+            </label>
+            <label>Tracking number <input type="text" name="trackingNumber" maxlength="60"></label>
+            <button class="btn act" type="submit">Mark as shipped</button>
+        </form>
+    </section>
+</main>
+</body>
+</html>

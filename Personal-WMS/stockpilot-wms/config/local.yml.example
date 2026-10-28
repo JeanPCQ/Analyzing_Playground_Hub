@@ -1,0 +1,6 @@
+# Copy this file to config/local.yml and put your real password in it.
+# config/local.yml is listed in .gitignore, so it never ends up on GitHub.
+spring:
+  datasource:
+    username: wms_app
+    password: change-me

@@ -1,0 +1,30 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "WMS",
+      "request": "launch",
+      "mainClass": "com.stockpilot.wms.WmsApplication",
+      "projectName": "stockpilot-wms",
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "java",
+      "name": "WMS (sandbox database)",
+      "request": "launch",
+      "mainClass": "com.stockpilot.wms.WmsApplication",
+      "projectName": "stockpilot-wms",
+      "cwd": "${workspaceFolder}",
+      "args": "--spring.profiles.active=sandbox"
+    },
+    {
+      "type": "java",
+      "name": "Connector",
+      "request": "launch",
+      "mainClass": "com.stockpilot.connector.ConnectorApplication",
+      "projectName": "stockpilot-connector",
+      "cwd": "${workspaceFolder}/connector"
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Parts')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: nav}"></header>
+<main class="page">
+    <div th:replace="~{fragments/layout :: flash}"></div>
+    <div class="page-head">
+        <div>
+            <h1>Parts</h1>
+            <p class="sub">Everything the warehouse stocks. Quantities are in eaches.</p>
+        </div>
+        <a class="btn act" th:href="@{/parts/new}">New part</a>
+    </div>
+
+    <section class="panel">
+        <form class="inline" th:action="@{/parts}" method="get" style="margin-bottom:14px">
+            <label>Search
+                <input type="search" name="q" th:value="${q}" placeholder="Part number or description">
+            </label>
+            <button class="btn quiet" type="submit">Search</button>
+            <a class="btn quiet" th:if="${q}" th:href="@{/parts}">Clear</a>
+        </form>
+        <p class="empty" th:if="${#lists.isEmpty(parts)}">No parts match that search.</p>
+        <div class="table-wrap" th:unless="${#lists.isEmpty(parts)}">
+            <table>
+                <thead>
+                <tr><th>Part number</th><th>Description</th><th class="num">On hand</th><th class="num">Allocated</th>
+                    <th class="num">Available</th><th class="num">Std cost</th><th></th></tr>
+                </thead>
+                <tbody>
+                <tr th:each="s : ${parts}" th:classappend="${!s.part.active} ? 'done'">
+                    <td><a th:href="@{/parts/{id}(id=${s.part.id})}" th:text="${s.part.partNumber}">PN</a></td>
+                    <td th:text="${s.part.description}">Description</td>
+                    <td class="num" th:text="${@fmt.qty(s.onHand)}">0</td>
+                    <td class="num" th:text="${@fmt.qty(s.allocated)}">0</td>
+                    <td class="num" th:classappend="${@fmt.neg(s.available)} ? 'neg'" th:text="${@fmt.qty(s.available)}">0</td>
+                    <td class="num" th:text="${@fmt.money(s.part.standardCost)}">$0</td>
+                    <td><span class="pill low" th:if="${s.lowStock and s.part.active}">Low</span>
+                        <span class="pill" th:unless="${s.part.active}">Inactive</span></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+</body>
+</html>

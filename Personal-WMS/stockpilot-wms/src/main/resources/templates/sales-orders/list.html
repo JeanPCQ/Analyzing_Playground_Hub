@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Sales orders')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: nav}"></header>
+<main class="page">
+    <div th:replace="~{fragments/layout :: flash}"></div>
+    <div class="page-head">
+        <div>
+            <h1>Sales orders</h1>
+            <p class="sub">Customer orders, from entry to shipment. Web store orders arrive here through the API.</p>
+        </div>
+        <a class="btn act" th:href="@{/sales-orders/new}">New sales order</a>
+    </div>
+    <section class="panel">
+        <p class="empty" th:if="${#lists.isEmpty(orders)}">No sales orders yet.</p>
+        <div class="table-wrap" th:unless="${#lists.isEmpty(orders)}">
+            <table>
+                <thead><tr><th>SO</th><th>Customer</th><th>Status</th><th>Source</th><th>External ref</th><th>Ordered</th><th class="num">Lines</th></tr></thead>
+                <tbody>
+                <tr th:each="so : ${orders}">
+                    <td><a th:href="@{/sales-orders/{id}(id=${so.id})}" th:text="${so.soNumber}">SO</a></td>
+                    <td th:text="${so.customer.name}">Customer</td>
+                    <td><span class="pill" th:classappend="${@fmt.statusClass(so.status)}" th:text="${@fmt.label(so.status)}">Status</span></td>
+                    <td th:text="${@fmt.label(so.source)}">Manual</td>
+                    <td class="muted" th:text="${so.externalRef}"></td>
+                    <td th:text="${so.orderDate}">date</td>
+                    <td class="num" th:text="${#lists.size(so.lines)}">0</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+</body>
+</html>

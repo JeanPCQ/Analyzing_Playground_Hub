@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${po.poNumber})}"></head>
+<body>
+<header th:replace="~{fragments/layout :: nav}"></header>
+<main class="page">
+    <div th:replace="~{fragments/layout :: flash}"></div>
+    <div class="page-head">
+        <div>
+            <h1><span th:text="${po.poNumber}">PO</span>
+                <span class="pill" th:classappend="${@fmt.statusClass(po.status)}" th:text="${@fmt.label(po.status)}">Status</span></h1>
+            <p class="sub" th:text="${po.vendor.name}">Vendor</p>
+        </div>
+        <div class="actions">
+            <form th:if="${po.editable}" th:action="@{/purchase-orders/{id}/issue(id=${po.id})}" method="post">
+                <button class="btn act" type="submit">Issue to vendor</button>
+            </form>
+            <form th:if="${!po.closed}"
+                  th:action="@{/purchase-orders/{id}/cancel(id=${po.id})}" method="post"
+                  onsubmit="return confirm('Cancel this purchase order?')">
+                <button class="btn danger" type="submit">Cancel PO</button>
+            </form>
+        </div>
+    </div>
+
+    <section class="panel">
+        <dl class="facts">
+            <dt>Ordered</dt><dd th:text="${po.orderDate}">date</dd>
+            <dt>Expected</dt><dd th:text="${po.expectedDate} ?: 'Not set'">date</dd>
+            <dt>Notes</dt><dd th:text="${po.notes} ?: 'None'">notes</dd>
+            <dt>Order total</dt><dd><strong th:text="'$' + ${total}">$0</strong></dd>
+        </dl>
+    </section>
+
+    <section class="panel">
+        <h2>Lines</h2>
+        <p class="empty" th:if="${#lists.isEmpty(po.lines)}">No lines yet. Add the parts you're ordering below.</p>
+        <div class="table-wrap" th:unless="${#lists.isEmpty(po.lines)}">
+            <table>
+                <thead><tr><th>#</th><th>Part</th><th>Unit</th><th class="num">Ordered</th><th class="num">Received</th>
+                    <th class="num">Unit cost</th><th class="num">Line total</th><th>Status</th><th></th></tr></thead>
+                <tbody>
+                <tr th:each="line : ${po.lines}">
+                    <td th:text="${line.lineNo}">1</td>
+                    <td><strong th:text="${line.part.partNumber}">PN</strong>
+                        <div class="muted" th:text="${line.part.description}"></div></td>
+                    <td th:text="${line.uom.code}">EA</td>
+                    <td class="num" th:text="${@fmt.qty(line.qtyOrdered)}">0</td>
+                    <td class="num" th:text="${@fmt.qty(line.qtyReceived)}">0</td>
+                    <td class="num" th:text="${@fmt.money(line.unitCost)}">$0</td>
+                    <td class="num" th:text="${@fmt.money(line.lineTotal)}">$0</td>
+                    <td><span class="pill" th:classappend="${@fmt.statusClass(line.status)}" th:text="${@fmt.label(line.status)}">Open</span></td>
+                    <td>
+                        <form th:if="${po.editable}" th:action="@{/purchase-orders/{id}/lines/{lineId}/delete(id=${po.id},lineId=${line.id})}" method="post">
+                            <button class="btn danger small" type="submit">Remove</button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="panel" th:if="${po.editable}">
+        <h2>Add a line</h2>
+        <form class="inline" th:action="@{/purchase-orders/{id}/lines(id=${po.id})}" method="post">
+            <label>Part
+                <select name="partId" required>
+                    <option th:each="p : ${parts}" th:value="${p.id}" th:text="${p.partNumber + ' - ' + p.description}">Part</option>
+                </select>
+            </label>
+            <label>Unit
+                <select name="uomId" required>
+                    <option th:each="u : ${uoms}" th:value="${u.id}" th:text="${u.code + ' (' + u.name + ')'}">EA</option>
+                </select>
+            </label>
+            <label>Quantity <input type="number" name="qty" step="any" min="0" required></label>
+            <label>Unit cost <input type="number" name="unitCost" step="0.0001" min="0" required></label>
+            <button class="btn act" type="submit">Add line</button>
+        </form>
+    </section>
+
+    <section class="panel" th:if="${po.receivable}">
+        <h2>Receive</h2>
+        <p class="sub" style="margin-bottom:12px">Enter the quantity in the line's unit. Stock is stored in eaches.</p>
+        <form class="inline" th:action="@{/purchase-orders/{id}/receive(id=${po.id})}" method="post">
+            <label>Line
+                <select name="lineId" required>
+                    <option th:each="line : ${po.lines}" th:if="${@fmt.pos(line.qtyRemaining)}" th:value="${line.id}"
+                            th:text="${line.lineNo + ': ' + line.part.partNumber + ' (' + @fmt.qty(line.qtyRemaining) + ' ' + line.uom.code + ' left)'}">Line</option>
+                </select>
+            </label>
+            <label>Quantity <input type="number" name="qty" step="any" min="0" required></label>
+            <label>Into location
+                <select name="locationId" required>
+                    <option th:each="l : ${locations}" th:value="${l.id}" th:text="${l.code}">LOC</option>
+                </select>
+            </label>
+            <button class="btn act" type="submit">Receive</button>
+        </form>
+    </section>
+</main>
+</body>
+</html>

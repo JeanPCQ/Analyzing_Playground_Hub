@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Locations')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: nav}"></header>
+<main class="page">
+    <div th:replace="~{fragments/layout :: flash}"></div>
+    <div class="page-head">
+        <div>
+            <h1>Locations</h1>
+            <p class="sub">Docks, bins and staging areas. Codes follow aisle-bay-level, like A-01-02.</p>
+        </div>
+    </div>
+    <section class="panel">
+        <h2>Add a location</h2>
+        <form class="inline" th:action="@{/locations}" method="post">
+            <label>Code <input type="text" name="code" maxlength="30" placeholder="C-01-01" required></label>
+            <label>Name <input type="text" name="name" maxlength="100" placeholder="Aisle C, bay 1, level 1" required></label>
+            <label>Zone <input type="text" name="zone" maxlength="30" placeholder="C" required></label>
+            <label>Type
+                <select name="type"><option th:each="t : ${types}" th:value="${t}" th:text="${@fmt.label(t)}">Type</option></select>
+            </label>
+            <button class="btn act" type="submit">Add location</button>
+        </form>
+    </section>
+    <section class="panel">
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>Code</th><th>Name</th><th>Zone</th><th>Type</th><th>Status</th><th></th></tr></thead>
+                <tbody>
+                <tr th:each="l : ${locations}" th:classappend="${!l.active} ? 'done'">
+                    <td><strong th:text="${l.code}">LOC</strong></td>
+                    <td th:text="${l.name}">name</td>
+                    <td th:text="${l.zone}">Z</td>
+                    <td th:text="${@fmt.label(l.type)}">type</td>
+                    <td th:text="${l.active} ? 'Active' : 'Inactive'">Active</td>
+                    <td>
+                        <form th:action="@{/locations/{id}/toggle(id=${l.id})}" method="post">
+                            <button class="btn quiet small" type="submit" th:text="${l.active} ? 'Deactivate' : 'Activate'">Toggle</button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+</body>
+</html>

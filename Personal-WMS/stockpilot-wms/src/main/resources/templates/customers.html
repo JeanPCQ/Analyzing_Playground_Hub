@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Customers')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: nav}"></header>
+<main class="page">
+    <div th:replace="~{fragments/layout :: flash}"></div>
+    <div class="page-head"><div><h1>Customers</h1><p class="sub">Who we ship to. The API refers to customers by code.</p></div></div>
+    <section class="panel">
+        <h2>Add a customer</h2>
+        <form class="inline" th:action="@{/customers}" method="post">
+            <label>Code <input type="text" name="code" maxlength="20" required></label>
+            <label>Name <input type="text" name="name" maxlength="100" required></label>
+            <label>Email <input type="email" name="email" maxlength="100"></label>
+            <label>Ship to <input type="text" name="shipTo" maxlength="255"></label>
+            <button class="btn act" type="submit">Add customer</button>
+        </form>
+    </section>
+    <section class="panel">
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>Code</th><th>Name</th><th>Email</th><th>Ship to</th></tr></thead>
+                <tbody>
+                <tr th:each="c : ${customers}">
+                    <td><strong th:text="${c.code}">CODE</strong></td>
+                    <td th:text="${c.name}">name</td>
+                    <td th:text="${c.email}">email</td>
+                    <td th:text="${c.shipTo}">address</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+</body>
+</html>

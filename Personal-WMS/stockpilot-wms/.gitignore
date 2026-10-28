@@ -1,0 +1,30 @@
+# Build output
+target/
+connector/target/
+
+# Your local secrets (database password). Never commit this.
+config/local.yml
+
+# Logs
+logs/
+connector/logs/
+
+# Connector runtime folders (keep the folders, not the files)
+connector/inbox/*
+connector/processed/*
+connector/failed/*
+!connector/inbox/.gitkeep
+!connector/processed/.gitkeep
+!connector/failed/.gitkeep
+
+# Backups
+backups/
+
+# Editors and OS
+.idea/
+*.iml
+.DS_Store
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/launch.json
